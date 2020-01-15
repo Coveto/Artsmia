@@ -1,15 +1,16 @@
-package it.polito.tdp.artsmia.db;
+package it.polito.tdp.artsmia.model;
 
-import it.polito.tdp.artsmia.model.ArtObject;
-import it.polito.tdp.artsmia.model.Model;
+import java.util.List;
 
 public class TestModel {
 	
 	public void run() {
 		Model model = new Model();
 		model.creaGrafo();
-		ArtObject ao  = model.getObjects().get(0);
+		ArtObject ao  = model.getObjects().get(1024);
 		model.listCorrelati(ao);
+		List<ArtObject> walk = model.findWalk(ao, 5);
+		System.out.println(walk);
 	}
 	
 	public static void main(String[] args) {

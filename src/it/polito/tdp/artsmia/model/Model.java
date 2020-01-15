@@ -1,10 +1,12 @@
 package it.polito.tdp.artsmia.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
@@ -66,6 +68,7 @@ public class Model {
 	private Graph<ArtObject, DefaultWeightedEdge> graph;
 	private Map<Integer, ArtObject> idMap;
 	private Map<ArtObject, ArtObject> backVisitTree;
+	private LinkedList<ArtObject> best;
 	
 	public Model() {
 		graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
@@ -105,8 +108,7 @@ public class Model {
 		while (it.hasNext()) {
 			result.add(it.next());
 		}
-				
-		
+						
 		return result;
 		
 	}
@@ -147,6 +149,49 @@ public class Model {
 		}
 		
 		return walk;
+	}
+
+	public ArtObject getObject(Integer id) {
+		return idMap.get(id);
+	}
+
+	public List<ArtObject> findWalk(ArtObject source, int lun) {
+		best = new LinkedList<>();
+		List<ArtObject> partial = new LinkedList<>();
+		partial.add(source);
+		best.add(source);
+		runRecursion(partial, lun);
+		
+		Collections.sort(best);
+		
+		return this.best;
+	}
+	
+	private void runRecursion(List<ArtObject> partial, int lun) {
+		// Filtro
+		if(partial.size() >= lun) {
+			if ( getTotalWeight(partial) > getTotalWeight(best) )
+				this.best = new LinkedList<>(partial);
+			return;
+		}
+		// Ottengo candidati e li provo tutti
+		Set<ArtObject> after = Graphs.neighborSetOf(graph, partial.get(partial.size()-1));
+		for (ArtObject s: after) {
+			if(!partial.contains(s) && partial.get(0).getClassification().equals(s.getClassification()) ) {
+				partial.add(s);
+				this.runRecursion(partial, lun);
+				partial.remove(partial.size()-1);
+			}
+		}
+		
+	}
+
+	public int getTotalWeight(List<ArtObject> partial) {
+		int weight = 0;
+		for (int i = 0; i<partial.size()-1; i++) {
+			weight += this.graph.getEdgeWeight(this.graph.getEdge(partial.get(i), partial.get(i+1)));
+		}
+		return weight;
 	}
 
 }
