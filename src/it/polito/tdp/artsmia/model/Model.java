@@ -92,6 +92,8 @@ public class Model {
 			Graphs.addEdge(graph, source, target, weight);
 		}
 		
+		System.out.println("Grafo creato: "+this.graph.vertexSet().size()+" vertici e "+this.graph.edgeSet().size()+" archi");
+		
 	}
 	
 	public List<ArtObject> listCorrelati( ArtObject source ) {
